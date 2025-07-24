@@ -160,36 +160,7 @@
         </div>
     </div>
     <script>
-    // Proteksi akses fitur sesuai role (harus dipanggil setelah login)
-    fetch('http://localhost:8000/session.php')
-      .then(r => r.json())
-      .then(res => {
-        if (!res.success) {
-          window.location.href = 'login.html';
-        } else {
-          const role = res.role;
-          // Sembunyikan tab/menu sesuai role
-          if (role === 'waka') {
-            // Hanya tampilkan tab laporan dan data siswa (read-only)
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-              if (btn.dataset.tab !== 'laporan' && btn.dataset.tab !== 'siswa') btn.style.display = 'none';
-            });
-            // Sembunyikan tombol tambah, hapus, import, kmeans, vikor
-            ['btn-show-modal','btn-delete-all','form-upload','btn-kmeans','btn-vikor','form-jumlah-lolos'].forEach(id => {
-              let el = document.getElementById(id); if (el) el.style.display = 'none';
-            });
-          } else if (role === 'siswa') {
-            // Hanya tampilkan tab laporan
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-              if (btn.dataset.tab !== 'laporan') btn.style.display = 'none';
-            });
-            // Sembunyikan semua tombol dan form selain laporan
-            ['btn-show-modal','btn-delete-all','form-upload','btn-kmeans','btn-vikor','form-jumlah-lolos'].forEach(id => {
-              let el = document.getElementById(id); if (el) el.style.display = 'none';
-            });
-          }
-        }
-      });
+    // Proteksi login dinonaktifkan sementara agar index.html bisa diakses tanpa login
     </script>
     <script src="main.js"></script>
     <!-- No reference to share-modal.js. All modal logic is handled in main.js. -->

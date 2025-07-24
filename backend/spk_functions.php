@@ -85,11 +85,12 @@ function kmeansClustering($k = 3, $maxIter = 100) {
         $data[] = ['id' => $row['id'], 'nilai' => $fuzzy];
     }
 
-    // Inisialisasi centroid acak
+    // Inisialisasi centroid: data pertama, kedua, ketiga
     $centroids = [];
-    $keys = array_rand($data, $k);
-    foreach ($keys as $key) {
-        $centroids[] = $data[$key]['nilai'];
+    for ($i = 0; $i < $k; $i++) {
+        if (isset($data[$i])) {
+            $centroids[] = $data[$i]['nilai'];
+        }
     }
 
     $maxIter = 20; // optimasi: batasi iterasi
