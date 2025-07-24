@@ -1,0 +1,67 @@
+<!-- Form Login Multi-Role -->
+<div id="login-form" style="max-width:340px;margin:40px auto;padding:24px;border:1px solid #ccc;border-radius:8px;box-shadow:0 2px 8px #0001;background:#fff;">
+    <h2 style="text-align:center;">Login</h2>
+    <label for="login-role">Login sebagai:</label>
+    <select id="login-role" style="width:100%;margin-bottom:10px;">
+        <option value="admin">Admin</option>
+        <option value="waka">Waka Kesiswaan</option>
+        <option value="siswa">Siswa</option>
+    </select>
+    <input type="text" id="login-username" placeholder="Username/NISN" style="width:100%;margin-bottom:10px;" required>
+    <input type="password" id="login-password" placeholder="Password" style="width:100%;margin-bottom:10px;">
+    <button id="btn-login" style="width:100%;background:#007bff;color:#fff;padding:8px 0;border:none;border-radius:4px;">Login</button>
+    <div id="login-msg" style="color:#d9534f;margin-top:10px;text-align:center;"></div>
+</div>
+<script>
+// Login handler
+const loginForm = document.getElementById('login-form');
+const loginRole = document.getElementById('login-role');
+const loginUsername = document.getElementById('login-username');
+const loginPassword = document.getElementById('login-password');
+const loginMsg = document.getElementById('login-msg');
+
+loginRole.onchange = function() {
+    if (loginRole.value === 'siswa') {
+        loginPassword.style.display = 'none';
+        loginUsername.placeholder = 'NISN';
+    } else {
+        loginPassword.style.display = 'block';
+        loginUsername.placeholder = 'Username';
+    }
+};
+loginRole.onchange();
+
+document.getElementById('btn-login').onclick = function(e) {
+    e.preventDefault();
+    let role = loginRole.value;
+    let username = loginUsername.value.trim();
+    let password = loginPassword.value;
+    let payload = { role: role };
+    if (role === 'siswa') {
+        payload.nisn = username;
+    } else {
+        payload.username = username;
+        payload.password = password;
+    }
+    fetch('http://localhost:8000/login.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    })
+    .then(r => r.json())
+    .then(res => {
+        if (res.success) {
+            loginMsg.style.color = '#28a745';
+            loginMsg.innerText = 'Login berhasil!';
+            setTimeout(() => {
+                loginForm.style.display = 'none';
+                // TODO: tampilkan fitur sesuai role (bisa reload atau manipulasi DOM)
+                window.location.reload();
+            }, 800);
+        } else {
+            loginMsg.style.color = '#d9534f';
+            loginMsg.innerText = res.msg;
+        }
+    });
+};
+</script>

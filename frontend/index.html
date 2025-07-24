@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<!-- Modal Edit Siswa -->
+<div id="modal-edit" class="modal" style="display:none;position:fixed;z-index:1000;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);justify-content:center;align-items:center;">
+  <div class="modal-content" style="background:#fff;padding:20px;border-radius:8px;min-width:320px;max-width:400px;position:relative;">
+    <span id="close-modal-edit" class="close" style="position:absolute;top:10px;right:16px;font-size:24px;cursor:pointer;">&times;</span>
+    <h2>Edit Data Siswa</h2>
+    <form id="form-edit">
+      <input type="hidden" name="id" id="edit-id">
+      <label for="edit-nisn">NISN:</label>
+      <input type="text" name="nisn" id="edit-nisn" required maxlength="10"><br>
+      <label for="edit-nama">Nama:</label>
+      <input type="text" name="nama" id="edit-nama" required><br>
+      <label for="edit-asal">Asal Sekolah:</label>
+      <input type="text" name="asal_sekolah" id="edit-asal" required><br>
+      <label for="edit-sem1">Nilai Semester 1:</label>
+      <input type="number" name="nilai_sem1" id="edit-sem1" required min="0" max="100"><br>
+      <label for="edit-sem2">Nilai Semester 2:</label>
+      <input type="number" name="nilai_sem2" id="edit-sem2" required min="0" max="100"><br>
+      <label for="edit-sem3">Nilai Semester 3:</label>
+      <input type="number" name="nilai_sem3" id="edit-sem3" required min="0" max="100"><br>
+      <label for="edit-sem4">Nilai Semester 4:</label>
+      <input type="number" name="nilai_sem4" id="edit-sem4" required min="0" max="100"><br>
+      <label for="edit-sem5">Nilai Semester 5:</label>
+      <input type="number" name="nilai_sem5" id="edit-sem5" required min="0" max="100"><br>
+      <button type="submit" style="margin-top:10px;">Simpan Perubahan</button>
+    </form>
+  </div>
+</div>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPK Seleksi Siswa Baru</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>SPK Seleksi Siswa Baru</h1>
+        <nav class="navbar">
+            <button class="nav-btn" data-tab="siswa">Data Siswa</button>
+            <button class="nav-btn" data-tab="nilai">Data Nilai Siswa</button>
+            <button class="nav-btn" data-tab="pola">Pola Penentuan</button>
+            <button class="nav-btn" data-tab="laporan">Laporan Hasil</button>
+        </nav>
+        <div id="tab-siswa" class="tab-content">
+            <div id="modal-loading" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);z-index:9999;align-items:center;justify-content:center;">
+                <div style="background:#fff;padding:32px 48px;border-radius:8px;box-shadow:0 2px 8px #0002;font-size:18px;text-align:center;">
+                    <span id="loading-text">Memproses...</span>
+                </div>
+            </div>
+            <div id="modal-msg" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);z-index:9999;align-items:center;justify-content:center;">
+                <div style="background:#fff;padding:32px 48px;border-radius:8px;box-shadow:0 2px 8px #0002;font-size:18px;text-align:center;">
+                    <span id="msg-text"></span><br>
+                    <button id="close-msg" style="margin-top:18px;padding:6px 24px;background:#007bff;color:#fff;border:none;border-radius:4px;cursor:pointer;">Tutup</button>
+                </div>
+            </div>
+            <form id="form-upload" enctype="multipart/form-data">
+                <label>Import Data Siswa (CSV):</label>
+                <input type="file" name="file" accept=".csv" required>
+                <button type="submit">Upload</button>
+            </form>
+            <hr>
+            <button id="btn-show-modal">Tambah Siswa</button>
+            <button id="btn-delete-all" style="background:#d9534f;color:#fff;margin-left:10px;padding:6px 16px;border:none;border-radius:4px;cursor:pointer;">Hapus Semua Siswa</button>
+            <div id="modal-tambah" class="modal" style="display:none;">
+                <div class="modal-content">
+                    <span id="close-modal" class="close">&times;</span>
+                    <form id="form-tambah">
+                        <h3 style="text-align:center;margin-bottom:16px;">Tambah Data Siswa Manual</h3>
+                        <div class="form-row">
+                            <label>NISN</label>
+                            <input type="text" name="nisn" placeholder="NISN (10 digit)" maxlength="10" required>
+                        </div>
+                        <div class="form-row">
+                            <label>Nama</label>
+                            <input type="text" name="nama" placeholder="Nama" required>
+                        </div>
+                        <div class="form-row">
+                            <label>Asal Sekolah</label>
+                            <input type="text" name="asal_sekolah" placeholder="Asal Sekolah" required>
+                        </div>
+                        <div class="form-row">
+                            <label>Nilai Semester 1</label>
+                            <input type="number" name="nilai_sem1" placeholder="Nilai Semester 1" min="0" max="100" required>
+                        </div>
+                        <div class="form-row">
+                            <label>Nilai Semester 2</label>
+                            <input type="number" name="nilai_sem2" placeholder="Nilai Semester 2" min="0" max="100" required>
+                        </div>
+                        <div class="form-row">
+                            <label>Nilai Semester 3</label>
+                            <input type="number" name="nilai_sem3" placeholder="Nilai Semester 3" min="0" max="100" required>
+                        </div>
+                        <div class="form-row">
+                            <label>Nilai Semester 4</label>
+                            <input type="number" name="nilai_sem4" placeholder="Nilai Semester 4" min="0" max="100" required>
+                        </div>
+                        <div class="form-row">
+                            <label>Nilai Semester 5</label>
+                            <input type="number" name="nilai_sem5" placeholder="Nilai Semester 5" min="0" max="100" required>
+                        </div>
+                        <button type="submit" class="btn-tambah">Tambah Siswa</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div id="tab-nilai" class="tab-content" style="display:none;">
+            <h2>Data Nilai Siswa</h2>
+            <div id="nilai-table"></div>
+        </div>
+        <div id="tab-pola" class="tab-content" style="display:none;">
+            <h2>Pola Penentuan</h2>
+            <form id="form-jumlah-lolos" style="margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+                <label for="input-jumlah-lolos">Jumlah Lulus:</label>
+                <input type="number" id="input-jumlah-lolos" min="1" value="10" style="width:60px;">
+                <button type="submit">Terapkan</button>
+            </form>
+            <button id="btn-kmeans">Proses K-Means</button>
+            <button id="btn-vikor">Proses VIKOR</button>
+            <div id="pola-info"></div>
+            <h3 style="margin-top:24px;">Hasil Clustering K-Means</h3>
+            <table id="tabel-clustering" style="width:100%;border-collapse:collapse;margin-bottom:16px;">
+                <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>Cluster</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <h3 style="margin-top:24px;">Hasil Akhir VIKOR</h3>
+            <table id="tabel-vikor" style="width:100%;border-collapse:collapse;margin-bottom:16px;">
+                <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>Nilai Q</th>
+                        <th>Ranking</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div id="tab-laporan" class="tab-content" style="display:none;">
+            <h2>Laporan Hasil Seleksi</h2>
+            <button id="btn-pdf">Cetak PDF</button>
+            <table id="tabel-hasil">
+                <thead>
+                    <tr>
+                        <th>Nama</th>
+                        <th>NISN</th>
+                        <th>Asal Sekolah</th>
+                        <th>Nilai Q</th>
+                        <th>Ranking</th>
+                        <th>Keterangan</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+    <script>
+    // Proteksi akses fitur sesuai role (harus dipanggil setelah login)
+    fetch('http://localhost:8000/session.php')
+      .then(r => r.json())
+      .then(res => {
+        if (!res.success) {
+          window.location.href = 'login.html';
+        } else {
+          const role = res.role;
+          // Sembunyikan tab/menu sesuai role
+          if (role === 'waka') {
+            // Hanya tampilkan tab laporan dan data siswa (read-only)
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+              if (btn.dataset.tab !== 'laporan' && btn.dataset.tab !== 'siswa') btn.style.display = 'none';
+            });
+            // Sembunyikan tombol tambah, hapus, import, kmeans, vikor
+            ['btn-show-modal','btn-delete-all','form-upload','btn-kmeans','btn-vikor','form-jumlah-lolos'].forEach(id => {
+              let el = document.getElementById(id); if (el) el.style.display = 'none';
+            });
+          } else if (role === 'siswa') {
+            // Hanya tampilkan tab laporan
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+              if (btn.dataset.tab !== 'laporan') btn.style.display = 'none';
+            });
+            // Sembunyikan semua tombol dan form selain laporan
+            ['btn-show-modal','btn-delete-all','form-upload','btn-kmeans','btn-vikor','form-jumlah-lolos'].forEach(id => {
+              let el = document.getElementById(id); if (el) el.style.display = 'none';
+            });
+          }
+        }
+      });
+    </script>
+    <script src="main.js"></script>
+    <!-- No reference to share-modal.js. All modal logic is handled in main.js. -->
+</body>
+</html>
