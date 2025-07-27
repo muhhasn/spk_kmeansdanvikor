@@ -15,13 +15,13 @@
       <label for="edit-sem1">Nilai Semester 1:</label>
       <input type="number" name="nilai_sem1" id="edit-sem1" required min="0" max="100"><br>
       <label for="edit-sem2">Nilai Semester 2:</label>
-      <input type="number" name="nilai_sem2" id="edit-sem2" required min="0" max="100"><br>
+      <input type="number" name="nilai_sem2" id="edit-sem2" required min="0" max="100" step="any"><br>
       <label for="edit-sem3">Nilai Semester 3:</label>
-      <input type="number" name="nilai_sem3" id="edit-sem3" required min="0" max="100"><br>
+      <input type="number" name="nilai_sem3" id="edit-sem3" required min="0" max="100" step="any"><br>
       <label for="edit-sem4">Nilai Semester 4:</label>
-      <input type="number" name="nilai_sem4" id="edit-sem4" required min="0" max="100"><br>
+      <input type="number" name="nilai_sem4" id="edit-sem4" required min="0" max="100" step="any"><br>
       <label for="edit-sem5">Nilai Semester 5:</label>
-      <input type="number" name="nilai_sem5" id="edit-sem5" required min="0" max="100"><br>
+      <input type="number" name="nilai_sem5" id="edit-sem5" required min="0" max="100" step="any"><br>
       <button type="submit" style="margin-top:10px;">Simpan Perubahan</button>
     </form>
   </div>
@@ -35,13 +35,18 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="login-bar" style="width:100vw;display:flex;justify-content:flex-end;align-items:center;padding:18px 32px 0 0;min-height:48px;">
+      <span id="login-info" style="font-size:18px;color:#222;margin-right:16px;"></span>
+      <button id="btn-login" style="display:none;padding:8px 24px;background:#007bff;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:16px;font-weight:600;">Login</button>
+      <!-- Tombol logout hanya di info bar, diatur dinamis oleh main.js -->
+    </div>
     <div class="container">
         <h1>SPK Seleksi Siswa Baru</h1>
         <nav class="navbar">
+            <button class="nav-btn" data-tab="laporan">Laporan Hasil</button>
             <button class="nav-btn" data-tab="siswa">Data Siswa</button>
             <button class="nav-btn" data-tab="nilai">Data Nilai Siswa</button>
             <button class="nav-btn" data-tab="pola">Pola Penentuan</button>
-            <button class="nav-btn" data-tab="laporan">Laporan Hasil</button>
         </nav>
         <div id="tab-siswa" class="tab-content">
             <div id="modal-loading" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.3);z-index:9999;align-items:center;justify-content:center;">
@@ -62,7 +67,6 @@
             </form>
             <hr>
             <button id="btn-show-modal">Tambah Siswa</button>
-            <button id="btn-delete-all" style="background:#d9534f;color:#fff;margin-left:10px;padding:6px 16px;border:none;border-radius:4px;cursor:pointer;">Hapus Semua Siswa</button>
             <div id="modal-tambah" class="modal" style="display:none;">
                 <div class="modal-content">
                     <span id="close-modal" class="close">&times;</span>
@@ -82,23 +86,23 @@
                         </div>
                         <div class="form-row">
                             <label>Nilai Semester 1</label>
-                            <input type="number" name="nilai_sem1" placeholder="Nilai Semester 1" min="0" max="100" required>
+                            <input type="number" name="nilai_sem1" placeholder="Nilai Semester 1" min="0" max="100" step="any" required>
                         </div>
                         <div class="form-row">
                             <label>Nilai Semester 2</label>
-                            <input type="number" name="nilai_sem2" placeholder="Nilai Semester 2" min="0" max="100" required>
+                            <input type="number" name="nilai_sem2" placeholder="Nilai Semester 2" min="0" max="100" step="any" required>
                         </div>
                         <div class="form-row">
                             <label>Nilai Semester 3</label>
-                            <input type="number" name="nilai_sem3" placeholder="Nilai Semester 3" min="0" max="100" required>
+                            <input type="number" name="nilai_sem3" placeholder="Nilai Semester 3" min="0" max="100" step="any" required>
                         </div>
                         <div class="form-row">
                             <label>Nilai Semester 4</label>
-                            <input type="number" name="nilai_sem4" placeholder="Nilai Semester 4" min="0" max="100" required>
+                            <input type="number" name="nilai_sem4" placeholder="Nilai Semester 4" min="0" max="100" step="any" required>
                         </div>
                         <div class="form-row">
                             <label>Nilai Semester 5</label>
-                            <input type="number" name="nilai_sem5" placeholder="Nilai Semester 5" min="0" max="100" required>
+                            <input type="number" name="nilai_sem5" placeholder="Nilai Semester 5" min="0" max="100" step="any" required>
                         </div>
                         <button type="submit" class="btn-tambah">Tambah Siswa</button>
                     </form>
@@ -160,9 +164,99 @@
         </div>
     </div>
     <script>
-    // Proteksi login dinonaktifkan sementara agar index.html bisa diakses tanpa login
+      // Fungsi render tiap tab, harus didefinisikan sebelum dipakai
+      function renderTab(tab, allowedTabs) {
+        // Jika hanya allowed laporan, paksa tab = laporan dan hanya tampilkan tab laporan
+        if (allowedTabs && allowedTabs.length === 1 && allowedTabs[0] === 'laporan') {
+          tab = 'laporan';
+          document.querySelectorAll('.tab-content').forEach(t => {
+            if (t.id === 'tab-laporan') {
+              t.style.display = '';
+            } else {
+              t.style.display = 'none';
+            }
+          });
+        } else {
+          document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+          document.getElementById('tab-' + tab).style.display = '';
+        }
+        if (tab === 'laporan') {
+          if (typeof renderLaporan === 'function') renderLaporan();
+        } else if (tab === 'siswa') {
+          if (typeof renderSiswa === 'function') renderSiswa();
+        } else if (tab === 'nilai') {
+          if (typeof renderNilai === 'function') renderNilai();
+        } else if (tab === 'pola') {
+          if (typeof renderPola === 'function') renderPola();
+        }
+      }
+
+      // Default: tampilkan tab laporan saja sebelum session dicek
+      document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+      document.getElementById('tab-laporan').style.display = '';
+      if (typeof renderLaporan === 'function') renderLaporan();
+
+      // Cek session di awal, jika belum login redirect ke login.html
+      fetch('http://localhost:8000/session.php', { credentials: 'include' })
+        .then(r => r.json())
+        .then(sess => {
+          if (!(sess && sess.success)) {
+            window.location.href = 'login.html';
+            return;
+          }
+          // ...existing code...
+          var info = document.getElementById('login-info');
+          var btnLogin = document.getElementById('btn-login');
+          var role = sess.user.role;
+          var nama = '-';
+          if (role === 'siswa') {
+            nama = sess.user.nama || sess.user.nisn || '-';
+          } else {
+            nama = sess.user.username || '-';
+          }
+          info.innerHTML = 'Login sebagai <b>' + nama + '</b> (' + role + ')';
+          btnLogin.style.display = 'none';
+          btnLogin.onclick = function() {
+            window.location.href = 'login.html';
+          };
+          // Tombol logout di info bar diatur dari main.js, tidak perlu diatur di sini
+
+          // Atur tab yang terlihat sesuai role
+          var navBtns = document.querySelectorAll('.nav-btn');
+          var allowedTabs = [];
+          if (role === 'admin') {
+            allowedTabs = ['laporan', 'siswa', 'nilai', 'pola'];
+            navBtns.forEach(btn => {
+              btn.style.display = '';
+              btn.onclick = function() {
+                var tab = btn.getAttribute('data-tab');
+                renderTab(tab, allowedTabs);
+              };
+            });
+          } else {
+            allowedTabs = ['laporan'];
+            navBtns.forEach(btn => {
+              if (btn.getAttribute('data-tab') === 'laporan') {
+                btn.style.display = '';
+                btn.onclick = function() {
+                  renderTab('laporan', allowedTabs);
+                };
+              } else {
+                btn.style.display = 'none';
+                btn.onclick = null;
+              }
+            });
+          }
+          // Default aktif tab laporan
+          renderTab('laporan', allowedTabs);
+        });
+      var closeEdit = document.getElementById('close-modal-edit');
+      if (closeEdit) {
+        closeEdit.onclick = function() {
+          document.getElementById('modal-edit').style.display = 'none';
+        };
+      }
     </script>
     <script src="main.js"></script>
-    <!-- No reference to share-modal.js. All modal logic is handled in main.js. -->
 </body>
 </html>

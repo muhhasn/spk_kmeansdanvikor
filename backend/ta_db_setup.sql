@@ -1,4 +1,4 @@
--- SQL setup for ta_db
+-- Setup database ta_db
 CREATE DATABASE IF NOT EXISTS ta_db;
 USE ta_db;
 
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS vikor (
     FOREIGN KEY (id_siswa) REFERENCES siswa(id) ON DELETE CASCADE
 );
 
--- Tabel hasil_seleksi
+-- Tabel hasil seleksi
 CREATE TABLE IF NOT EXISTS hasil_seleksi (
     id INT AUTO_INCREMENT PRIMARY KEY,
     id_siswa INT NOT NULL,

@@ -13,6 +13,15 @@
     <div id="login-msg" style="color:#d9534f;margin-top:10px;text-align:center;"></div>
 </div>
 <script>
+// Routing: jika sudah login, redirect ke dashboard
+fetch('http://localhost:8000/session.php', { credentials: 'include' })
+  .then(r => r.json())
+  .then(sess => {
+    if (sess && sess.success) {
+      window.location.href = 'index.html';
+    }
+  });
+
 // Login handler
 const loginForm = document.getElementById('login-form');
 const loginRole = document.getElementById('login-role');
@@ -46,7 +55,8 @@ document.getElementById('btn-login').onclick = function(e) {
     fetch('http://localhost:8000/login.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        credentials: 'include'
     })
     .then(r => r.json())
     .then(res => {

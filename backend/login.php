@@ -1,7 +1,13 @@
 
 <?php
-// CORS headers
-header('Access-Control-Allow-Origin: *');
+// CORS: pastikan origin sesuai frontend
+$origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
+if ($origin) {
+    header('Access-Control-Allow-Origin: ' . $origin);
+} else {
+    header('Access-Control-Allow-Origin: http://localhost:5173'); // ganti sesuai port frontend
+}
+header('Access-Control-Allow-Credentials: true');
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type');
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') { http_response_code(200); exit; }
@@ -20,7 +26,16 @@ if ($role === 'admin' || $role === 'waka') {
     $stmt = $pdo->prepare("SELECT * FROM users WHERE username=? AND role=?");
     $stmt->execute([$username, $role]);
     $user = $stmt->fetch();
-    if ($user && password_verify($password, $user['password'])) {
+    $valid = false;
+    if ($user) {
+        if (password_verify($password, $user['password'])) {
+            $valid = true;
+        } else if ($password === $user['password']) {
+            // Fallback: password belum di-hash
+            $valid = true;
+        }
+    }
+    if ($valid) {
         $_SESSION['user'] = ['id'=>$user['id'], 'role'=>$user['role'], 'username'=>$user['username']];
         echo json_encode(['success'=>true, 'role'=>$user['role']]);
     } else {

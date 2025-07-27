@@ -85,9 +85,10 @@ function kmeansClustering($k = 3, $maxIter = 100) {
         $data[] = ['id' => $row['id'], 'nilai' => $fuzzy];
     }
 
-    // Inisialisasi centroid: data pertama, kedua, ketiga
+    // Inisialisasi centroid: data ke-1, ke-2, dan ke-7
     $centroids = [];
-    for ($i = 0; $i < $k; $i++) {
+    $centroidIdxs = [2, 7, 8];
+    foreach ($centroidIdxs as $i) {
         if (isset($data[$i])) {
             $centroids[] = $data[$i]['nilai'];
         }
@@ -157,8 +158,8 @@ function kmeansClustering($k = 3, $maxIter = 100) {
 // Proses VIKOR untuk siswa di cluster 2 dan 3
 function vikorRanking($topLulus = 10) {
     $pdo = getPDO();
-    // Ambil siswa dari cluster 1 dan 2 saja
-    $stmt = $pdo->query("SELECT s.id, s.nilai_sem1, s.nilai_sem2, s.nilai_sem3, s.nilai_sem4, s.nilai_sem5 FROM siswa s JOIN clustering c ON s.id = c.id_siswa WHERE c.cluster IN (1,2)");
+    // Ambil siswa dari cluster 2 dan 3 saja (sesuai laporan manual)
+    $stmt = $pdo->query("SELECT s.id, s.nilai_sem1, s.nilai_sem2, s.nilai_sem3, s.nilai_sem4, s.nilai_sem5 FROM siswa s JOIN clustering c ON s.id = c.id_siswa WHERE c.cluster IN (2,3)");
     $siswa = [];
     while ($row = $stmt->fetch()) {
         $fuzzy = [

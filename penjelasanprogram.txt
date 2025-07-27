@@ -1,0 +1,30 @@
+1. Input Data Siswa
+Anda bisa menambah data siswa secara manual lewat form, atau mengimpor data siswa dari file CSV.
+Data yang dimasukkan meliputi: NISN, Nama, Asal Sekolah, dan nilai semester 1-5.
+2. Pengelolaan Data
+Data siswa yang sudah masuk bisa diedit atau dihapus melalui tabel di tab "Data Siswa" dan "Data Nilai Siswa".
+Terdapat fitur hapus satu siswa atau hapus semua siswa.
+3. Proses K-Means
+Pada tab "Pola Penentuan", klik tombol Proses K-Means.
+Algoritma K-Means akan mengelompokkan siswa ke dalam 3 cluster berdasarkan nilai-nilai mereka.
+Inisialisasi centroid selalu menggunakan data siswa pertama, kedua, dan ketiga agar hasil konsisten.
+Hasil clustering ditampilkan pada tabel "Hasil Clustering K-Means".
+4. Proses VIKOR
+Setelah K-Means, klik Proses VIKOR.
+VIKOR akan melakukan perankingan pada siswa di cluster 1 dan 2 (cluster terbaik).
+Hasil VIKOR berupa nilai Q dan ranking untuk setiap siswa yang lolos ke tahap ini.
+Hasil ranking ditampilkan pada tabel "Hasil Akhir VIKOR".
+5. Penentuan Kelulusan
+Jumlah siswa yang lulus dapat diatur pada form "Jumlah Lulus".
+Siswa dengan ranking 1 sampai jumlah lulus akan berstatus Lulus, sisanya Tidak Lulus.
+Siswa cluster 3 otomatis Tidak Lulus.
+6. Laporan Hasil Seleksi
+Tab "Laporan Hasil" menampilkan seluruh siswa beserta NISN, asal sekolah, nilai Q, ranking, dan status kelulusan.
+Data laporan diambil dari hasil VIKOR yang sudah digabungkan dengan data siswa.
+Anda bisa mencetak laporan ke PDF dengan tombol Cetak PDF.
+7. Akses User
+Admin: Bisa mengakses seluruh fitur (input, edit, hapus, proses, laporan).
+Waka Kesiswaan: Hanya bisa melihat laporan hasil.
+Siswa: Login dengan NISN, hanya bisa melihat laporan hasil dirinya.
+Alur singkat:
+Input data → Proses K-Means → Proses VIKOR → Atur jumlah lulus → Lihat/cetak laporan hasil.

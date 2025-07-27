@@ -1,5 +1,74 @@
 // ...existing code...
 document.addEventListener('DOMContentLoaded', function() {
+    // Hanya render info login dan logout, logic tab diatur dari index.html
+    fetch('http://localhost:8000/session.php', { credentials: 'include' })
+      .then(r => r.json())
+      .then(sess => {
+        if (!sess || !sess.success) {
+          window.location.href = 'login.html';
+          return;
+        }
+        var role = sess && sess.user ? sess.user.role : null;
+        // Render info login
+        var info = document.getElementById('login-info');
+        if (info) {
+          var nama = '-';
+          if (role === 'siswa') {
+            nama = sess.user.nama || sess.user.nisn || '-';
+          } else {
+            nama = sess.user.username || '-';
+          }
+          info.innerHTML = '<span style="font-size:20px;font-weight:600;color:#007bff;">Login sebagai <b>' + nama + '</b></span> <span style="font-size:16px;color:#555;">(' + role + ')</span> <button id="btn-logout" style="margin-left:24px;padding:6px 22px;background:#d9534f;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:16px;box-shadow:0 2px 8px #d9534f33;">Logout</button>';
+          document.getElementById('btn-logout').onclick = function() {
+            fetch('http://localhost:8000/logout.php', { credentials: 'include' })
+              .finally(() => {
+                window.location.href = 'login.html';
+              });
+          };
+        }
+        // Jika admin, load semua data tab di awal agar data tidak kosong saat tab dibuka
+        if (role === 'admin') {
+          loadNilai();
+          loadClustering();
+          loadVikorHasil();
+        }
+      });
+    // ...existing code...
+    // Handler form edit siswa
+    var formEdit = document.getElementById('form-edit');
+    if (formEdit) {
+        formEdit.onsubmit = function(e) {
+            e.preventDefault();
+            var data = {
+                id: document.getElementById('edit-id').value,
+                nisn: document.getElementById('edit-nisn').value,
+                nama: document.getElementById('edit-nama').value,
+                asal_sekolah: document.getElementById('edit-asal').value,
+                nilai_sem1: parseFloat(document.getElementById('edit-sem1').value.replace(',', '.')),
+                nilai_sem2: parseFloat(document.getElementById('edit-sem2').value.replace(',', '.')),
+                nilai_sem3: parseFloat(document.getElementById('edit-sem3').value.replace(',', '.')),
+                nilai_sem4: parseFloat(document.getElementById('edit-sem4').value.replace(',', '.')),
+                nilai_sem5: parseFloat(document.getElementById('edit-sem5').value.replace(',', '.'))
+            };
+            fetch(getApiUrl('edit_siswa'), {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            })
+            .then(r => r.json())
+            .then(res => {
+                if(res.success) {
+                    document.getElementById('modal-edit').style.display = 'none';
+                    loadNilai();
+                    loadClustering();
+                    loadVikorHasil();
+                    loadHasil();
+                } else {
+                    showMsg(res.msg || 'Gagal update data!');
+                }
+            });
+        };
+    }
     // Helper untuk URL API (pindahkan ke atas agar global)
     function getApiUrl(action) {
         // Selalu gunakan path absolut ke backend server
@@ -24,30 +93,7 @@ document.addEventListener('DOMContentLoaded', function() {
         modalMsg.style.display = 'flex';
     }
     closeMsg.onclick = function() { modalMsg.style.display = 'none'; };
-    // Navbar tab switching
-    var tabs = ['siswa', 'nilai', 'pola', 'laporan'];
-    document.querySelectorAll('.nav-btn').forEach(function(btn) {
-        btn.onclick = function() {
-            tabs.forEach(function(tab) {
-                document.getElementById('tab-' + tab).style.display = 'none';
-            });
-            document.getElementById('tab-' + btn.dataset.tab).style.display = 'block';
-            if (btn.dataset.tab === 'nilai') {
-                loadNilai();
-            }
-            // Load hasil clustering & VIKOR saat tab pola dibuka
-            if (btn.dataset.tab === 'pola') {
-                loadClustering();
-                loadVikorHasil();
-            }
-        };
-    });
-
-    // Tampilkan tab siswa saat awal
-    tabs.forEach(function(tab) {
-        document.getElementById('tab-' + tab).style.display = 'none';
-    });
-    document.getElementById('tab-siswa').style.display = 'block';
+    // ...existing code...
     // Event tombol hapus semua siswa di tab siswa
     var btnDeleteAll = document.getElementById('btn-delete-all');
     if (btnDeleteAll) {
@@ -261,8 +307,8 @@ function hapusSemuaSiswa() {
                 }
             }, 500);
         });
-        // Load data nilai saat tab nilai dibuka
-        document.querySelector('[data-tab="nilai"]').onclick = loadNilai;
+        // Pastikan handler tab tetap aktif setelah proses VIKOR
+        setTabHandlers();
     };
 
     // Cetak PDF
