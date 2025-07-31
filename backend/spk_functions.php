@@ -1,4 +1,12 @@
 <?php
+// Fungsi untuk mendapatkan bobot normalisasi (total 1, 0.2 tiap semester)
+function getBobotNormalisasi($n = 5) {
+    $bobot = [];
+    for ($i = 0; $i < $n; $i++) {
+        $bobot[] = 1 / $n; // 0.2 jika n=5
+    }
+    return $bobot;
+}
 // Koneksi database
 function getPDO() {
     $host = 'localhost';
@@ -66,7 +74,7 @@ function tambahSiswa($data) {
 
 // Fuzzifikasi nilai ke skala 0-1
 function fuzzify($nilai, $min=0, $max=100) {
-    return ($nilai - $min) / ($max - $min);
+    return $nilai / 100;
 }
 
 // Proses K-Means Clustering
@@ -87,7 +95,7 @@ function kmeansClustering($k = 3, $maxIter = 100) {
 
     // Inisialisasi centroid: data ke-1, ke-2, dan ke-7
     $centroids = [];
-    $centroidIdxs = [2, 7, 8];
+    $centroidIdxs = [0, 1, 6];
     foreach ($centroidIdxs as $i) {
         if (isset($data[$i])) {
             $centroids[] = $data[$i]['nilai'];
@@ -173,7 +181,7 @@ function vikorRanking($topLulus = 10) {
     }
     $n = count($siswa);
     if ($n == 0) return false;
-    $bobot = [0.2, 0.2, 0.2, 0.2, 0.2];
+    $bobot = getBobotNormalisasi(5); // [0.2, 0.2, 0.2, 0.2, 0.2]
     // F* dan F-
     $fstar = [];
     $fmin = [];
